@@ -7,5 +7,7 @@ defmodule CreditForecastWeb.Router do
 
   scope "/api", CreditForecastWeb do
     pipe_through :api
+
+    post("/query", QueryController, :get_matching_decisions)
   end
 end

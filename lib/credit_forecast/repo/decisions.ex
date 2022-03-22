@@ -12,10 +12,13 @@ defmodule CreditForecast.Repo.Decisions do
 
   @valid_operators ["eq", "gt"]
 
+  @derive {Jason.Encoder, only: [:row]}
   schema "decisions" do
     field :row, :map
   end
 
+  # These matches are here to shortcircuit the flow and skip querying the column table when we
+  # already know it's going to fail in the `build_query` function.
   def get_matching(:gt, _property, value) when not is_number(value) do
     {:error, "cannot use 'gt' operator for non numeric values"}
   end
@@ -39,27 +42,27 @@ defmodule CreditForecast.Repo.Decisions do
 
   # Since we can't use string interpolation for the fragments as Ecto detects a potential SQL
   # injection, we have to hardcode all the queries here.
-  def build_query("gt", "float", property, value) do
+  defp build_query("gt", "float", property, value) do
     {:ok, from(d in __MODULE__, where: fragment("(row->>?)::float > ?", ^property, ^value))}
   end
 
-  def build_query("gt", "integer", property, value) do
+  defp build_query("gt", "integer", property, value) do
     {:ok, from(d in __MODULE__, where: fragment("(row->>?)::integer > ?", ^property, ^value))}
   end
 
-  def build_query("eq", "float", property, value) do
+  defp build_query("eq", "float", property, value) do
     {:ok, from(d in __MODULE__, where: fragment("(row->>?)::float = ?", ^property, ^value))}
   end
 
-  def build_query("eq", "integer", property, value) do
+  defp build_query("eq", "integer", property, value) do
     {:ok, from(d in __MODULE__, where: fragment("(row->>?)::integer = ?", ^property, ^value))}
   end
 
-  def build_query("eq", "string", property, value) do
+  defp build_query("eq", "string", property, value) do
     {:ok, from(d in __MODULE__, where: fragment("(row->>?)::varchar = ?", ^property, ^value))}
   end
 
-  def build_query(_op, _type, _property, _value) do
+  defp build_query(_op, _type, _property, _value) do
     {:error, :unsupported_operation}
   end
 end
