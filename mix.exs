@@ -20,7 +20,7 @@ defmodule CreditForecast.MixProject do
   def application do
     [
       mod: {CreditForecast.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :crypto]
     ]
   end
 
@@ -41,7 +41,8 @@ defmodule CreditForecast.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:nimble_csv, "~> 1.2"}
+      {:nimble_csv, "~> 1.2"},
+      {:uuid, "~> 1.1"}
     ]
   end
 

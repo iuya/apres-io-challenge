@@ -8,7 +8,19 @@ defmodule CreditForecastWeb.QueryController do
         "operator" => op,
         "values" => value
       }) do
-    decisions = Decisions.get_matching(op, property_name, value)
-    json(conn, decisions)
+    case Decisions.get_matching(op, property_name, value) do
+      {:error, :input_error, msg} ->
+        conn
+        |> put_status(400)
+        |> json(%{code: :input_error, msg: msg})
+
+      {:error, :internal_error, msg} ->
+        conn
+        |> put_status(500)
+        |> json(%{code: :internal_error, msg: msg})
+
+      {:ok, decisions} ->
+        json(conn, decisions)
+    end
   end
 end

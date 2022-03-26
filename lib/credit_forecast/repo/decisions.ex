@@ -10,35 +10,35 @@ defmodule CreditForecast.Repo.Decisions do
   alias CreditForecast.Repo
   alias CreditForecast.Repo.Columns
 
-  @valid_operators ["eq", "gt"]
+  @operators ["eq", "gt"]
 
   @derive {Jason.Encoder, only: [:row]}
   schema "decisions" do
     field :row, :map
   end
 
-  # These matches are here to shortcircuit the flow and skip querying the column table when we
-  # already know it's going to fail in the `build_query` function.
-  def get_matching(:gt, _property, value) when not is_number(value) do
-    {:error, "cannot use 'gt' operator for non numeric values"}
-  end
-
-  def get_matching(operator, _property, _value) when operator not in @valid_operators do
-    {:error, "invalid operator '#{operator}, valid options are #{inspect(@valid_operators)}"}
-  end
-
   def get_matching(operator, property, value) do
-    with {:ok, type} <- Columns.fetch_type(property),
+    with :ok <- validate_query_params(operator, property, value),
+         {:ok, type} <- Columns.fetch_type(property),
          {:ok, query} <- build_query(operator, type, property, value) do
-      Repo.all(query)
+      {:ok, Repo.all(query)}
     else
-      {:error, :not_found} ->
-        {:error, "property '#{property}' does not exist"}
+      {:error, code, msg} when code in [:not_found, :unsupported_operation, :input_error] ->
+        {:error, :input_error, msg}
 
-      {:error, :unsupported_operation} ->
-        {:error, "cannot generate query with given parameters"}
+      other ->
+        {:error, :internal_error, "unexpected error: #{inspect(other)}"}
     end
   end
+
+  # We can do some basic checks to see if there is no need to hit the DB
+  def validate_query_params(:gt, _property, value) when not is_number(value),
+    do: {:error, :input_error, "cannot use 'gt' operator for non numeric values"}
+
+  def validate_query_params(op, _property, _value) when op not in @operators,
+    do: {:error, :input_error, "invalid operator '#{op}, options are #{inspect(@operators)}"}
+
+  def validate_query_params(_, _, _), do: :ok
 
   # Since we can't use string interpolation for the fragments as Ecto detects a potential SQL
   # injection, we have to hardcode all the queries here.
@@ -63,6 +63,6 @@ defmodule CreditForecast.Repo.Decisions do
   end
 
   defp build_query(_op, _type, _property, _value) do
-    {:error, :unsupported_operation}
+    {:error, :unsupported_operation, "cannot generate query with given parameters"}
   end
 end

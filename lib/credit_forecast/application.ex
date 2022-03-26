@@ -15,9 +15,11 @@ defmodule CreditForecast.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: CreditForecast.PubSub},
       # Start the Endpoint (http/https)
-      CreditForecastWeb.Endpoint
+      CreditForecastWeb.Endpoint,
       # Start a worker by calling: CreditForecast.Worker.start_link(arg)
       # {CreditForecast.Worker, arg}
+      {DynamicSupervisor, strategy: :one_for_one, name: CreditForecast.QuerySupervisor},
+      {Registry, keys: :unique, name: CreditForecast.QueryRegistry}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

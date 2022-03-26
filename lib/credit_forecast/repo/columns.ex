@@ -12,10 +12,14 @@ defmodule CreditForecast.Repo.Columns do
     field :type, :string
   end
 
+  def fetch_type(property) when not is_binary(property) do
+    {:error, :input_error, "property ís not a string"}
+  end
+
   def fetch_type(property) do
     case Repo.get_by(__MODULE__, name: property) do
       %__MODULE{type: type} -> {:ok, type}
-      nil -> {:error, :not_found}
+      nil -> {:error, :not_found, "property '#{property}' does not exist"}
     end
   end
 end
