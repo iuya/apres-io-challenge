@@ -54,8 +54,6 @@ defmodule CreditForecast.StatefulQuery do
 
   @impl true
   def handle_call(:dump, _from, {traversed, traversing} = state) do
-    IO.inspect(traversed, label: :traversed)
-    IO.inspect(traversing, label: :traversing)
     {:reply, {:ok, Enum.reverse(traversed, traversing)}, state}
   end
 

@@ -24,18 +24,14 @@ defmodule CreditForecast.Journal do
   # with the new one and have it work with any row property (even creating new ones if they don't
   # exist)
   def apply_operation(
-        {"update", row_property, {value, _comment}} = operation,
+        {"update", row_property, {value, _comment}},
         %Decisions{row: row} = decision
       ) do
-    IO.inspect(operation, label: :operationA)
-    IO.inspect(decision, label: :decisionA)
     %{decision | row: Map.put(row, row_property, value)}
   end
 
   # For all other operations we don't know what to do so we do nothing
-  def apply_operation(operation, decision) do
-    IO.inspect(operation, label: :operationB)
-    IO.inspect(decision, label: :decisionB)
+  def apply_operation(_operation, decision) do
     decision
   end
 end

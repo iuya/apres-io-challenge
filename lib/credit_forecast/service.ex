@@ -1,4 +1,8 @@
 defmodule CreditForecast.Service do
+  @moduledoc """
+  Handles all the business logic about the stateful query
+  """
+
   alias CreditForecast.Repo.Decisions
   alias CreditForecast.Journal
   alias CreditForecast.Metrics
@@ -59,16 +63,12 @@ defmodule CreditForecast.Service do
              %{"FORECAST" => [], "CHANGES" => 0},
              &build_raw_decision_dump/2
            ) do
-      IO.inspect(metrics, label: "metrics")
       metrics_summary = Metrics.calc_average_change(metrics, ["FORECAST", "CHANGES"])
       {:ok, %{decisions: entries, metrics: metrics_summary}}
     end
   end
 
   defp build_raw_decision_dump({%Decisions{} = decision, journal} = entry, metrics_acc) do
-    # IO.inspect(entry, label: "entry")
-    # IO.inspect(deltas_acc, label: "accumulator")
-
     serializable_journal =
       Enum.map(journal, fn {operation, column, {value, comment}} ->
         %{

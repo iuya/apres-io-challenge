@@ -1,4 +1,7 @@
 defmodule CreditForecast.Metrics do
+  @moduledoc """
+  Handles generating metrics related to the operations done over the decisions
+  """
   alias CreditForecast.Repo.Decisions
 
   # Receives a map which keys are the deltas we are interested in and calculates the difference

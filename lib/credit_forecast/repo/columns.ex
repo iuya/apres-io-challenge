@@ -18,7 +18,7 @@ defmodule CreditForecast.Repo.Columns do
 
   def fetch_type(property) do
     case Repo.get_by(__MODULE__, name: property) do
-      %__MODULE{type: type} -> {:ok, type}
+      %__MODULE__{type: type} -> {:ok, type}
       nil -> {:error, :not_found, "property '#{property}' does not exist"}
     end
   end
