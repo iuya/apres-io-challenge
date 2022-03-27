@@ -16,8 +16,29 @@ defmodule CreditForecast.Metrics do
     )
   end
 
+  def calc_average_change(map_of_metrics, keys) do
+    filtered_map = Map.take(map_of_metrics, keys)
+
+    :maps.map(
+      fn
+        _key, [] ->
+          0
+
+        _key, values when is_list(values) ->
+          {sum, total} =
+            Enum.reduce(values, {0, 0}, fn value, {sum, count} -> {sum + value, count + 1} end)
+
+          sum / total
+
+        _key, value ->
+          value
+      end,
+      filtered_map
+    )
+  end
+
   defp calculate_delta(acc, base, snapshot) when is_number(base) and is_number(snapshot) do
-    [snapshot - base, acc]
+    [snapshot - base | acc]
   end
 
   defp calculate_delta(acc, _base, _snapshot) do

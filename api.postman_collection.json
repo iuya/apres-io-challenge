@@ -1,0 +1,194 @@
+{
+	"info": {
+		"_postman_id": "cbd42bcb-1495-41f0-81e5-9dbf07e3f05a",
+		"name": "Apres.io challenge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Credit Forecast",
+			"item": [
+				{
+					"name": "Get Decisions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"column\": \"FORECAST\",\n    \"operator\": \"gt\",\n    \"values\": 500000.0\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/api/decisions",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"decisions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Query",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = JSON.parse(responseBody)",
+									"pm.environment.set(\"query_id\", res.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"column\": \"FORECAST\",\n    \"operator\": \"gt\",\n    \"values\": 650000.0\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/api/query",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"query"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get current",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/api/query/{{query_id}}",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"query",
+								"{{query_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get next",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/api/query/{{query_id}}/next",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"query",
+								"{{query_id}}",
+								"next"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get previous",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/api/query/{{query_id}}/prev",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"query",
+								"{{query_id}}",
+								"prev"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update forecast column",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"operation\": \"update\",\n        \"column\": \"FORECAST\",\n        \"value\": 999999999,\n        \"comment\": \"Testing updates in forecast\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/api/query/{{query_id}}",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"query",
+								"{{query_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dump decisions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/api/query/{{query_id}}/dump",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"query",
+								"{{query_id}}",
+								"dump"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
