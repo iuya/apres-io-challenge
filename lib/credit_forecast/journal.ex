@@ -10,14 +10,15 @@ defmodule CreditForecast.Journal do
   @type t :: [operation()]
 
   # For when the decision has no journal
-  def apply_operations(%Decisions{} = decision) do
-    decision
-  end
 
   def apply_operations({decision, journal}) do
     journal
     |> Enum.reverse()
     |> Enum.reduce(decision, &apply_operation/2)
+  end
+
+  def apply_operations(decision) do
+    decision
   end
 
   # We only know how to update 'FORECAST' but we can assume :update replaces any previous value
